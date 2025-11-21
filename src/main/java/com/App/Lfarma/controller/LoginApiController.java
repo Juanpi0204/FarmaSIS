@@ -4,6 +4,7 @@ import com.App.Lfarma.entity.Usuario;
 import com.App.Lfarma.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @RestController
 @RequestMapping("/api")
@@ -12,6 +13,8 @@ public class LoginApiController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/login")
     public String login(@RequestBody Usuario user) {
@@ -23,8 +26,8 @@ public class LoginApiController {
             return "ERROR_USER"; // usuario no existe
         }
 
-        // Comparar contraseña SIN bcrypt
-        if (u.getPassword().equals(user.getPassword())) {
+        // Comparar contraseña ENCRIPTADA
+        if (passwordEncoder.matches(user.getPassword(), u.getPassword())) {
             return "OK"; // login exitoso
         }
 
