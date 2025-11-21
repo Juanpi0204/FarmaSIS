@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+
+  l-farma-app:
+    build: .
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://l-farma-db:3306/l_farma_db?autoReconnect=true&connectTimeout=5000&socketTimeout=5000&allowPublicKeyRetrieval=true&useSSL=false
+
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - l-farma-db
+    networks:
+      - lfarma_net
+
+  l-farma-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: l_farma_db
+    ports:
+      - "3306:3306"
+    networks:
+      - lfarma_net
+    volumes:
+      - db_data:/var/lib/mysql   # <- corregido
+
+  mongo:
+    image: mongo:5
+    container_name: mongo-lfarma
+    ports:
+      - "27017:27017"
+    networks:
+      - lfarma_net
+
+  redis:
+    image: redis:7
+    container_name: redis-lfarma
+    ports:
+      - "6379:6379"
+    networks:
+      - lfarma_net
+
+networks:
+  lfarma_net:
+
+volumes:
+  db_data:
